@@ -24,11 +24,36 @@ export type Payslip = {
 
 export function calculatePayslip(salary: Salary): Payslip {
   // TODO: implement
+
   const result: Payslip = {
     salary: salary,
     deductions: new Map(),
     totalDeductions: 0.0,
     net: salary.gross,
   };
+
+  const gross = salary.gross;
+  const yearlySalary = gross * 12;
+  const born = salary.born;
+  const payday = salary.payday;
+
+  const ahv = (gross * DEDUCTION_RATES.get("AHV")) / 100; //435
+  const iv = (gross * DEDUCTION_RATES.get("IV")) / 100; //5
+  const eo = (gross * DEDUCTION_RATES.get("EO")) / 100;
+  const alv = (gross * DEDUCTION_RATES.get("ALV")) / 100;
+  const nbu = (gross * DEDUCTION_RATES.get("NBU")) / 100;
+  const pk = (gross * DEDUCTION_RATES.get("PK")) / 100;
+
+  result.deductions.set("AHV", ahv);
+  result.deductions.set("IV", iv);
+  result.deductions.set("EO", eo);
+  result.deductions.set("ALV", alv);
+  result.deductions.set("NBU", nbu);
+  result.deductions.set("PK", pk);
+
+  const totalDeductions = ahv + iv + eo + alv + nbu + pk;
+  result.totalDeductions = totalDeductions;
+  result.net = gross - totalDeductions;
+
   return result;
 }
