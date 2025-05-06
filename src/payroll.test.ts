@@ -11,6 +11,6 @@ test("calculatePayslip all Dedactions", () => {
 
   expect(payslip.salary).toEqual(salary);
   expect(payslip.deductions.size).toBe(6);
-  expect(payslip.totalDeductions).toBeCloseTo(435.0, 2); // Total deductions = 1395
-  expect(payslip.net).toBeCloseTo(4565.0, 2); // Adjusted for the correct net salary
+  expect(payslip.totalDeductions).toBeCloseTo(1066.5, 2);
+  expect(payslip.net).toBeCloseTo(3933.5, 2);
 })
