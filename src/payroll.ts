@@ -23,8 +23,6 @@ export type Payslip = {
 };
 
 export function calculatePayslip(salary: Salary): Payslip {
-  // TODO: implement
-
   const result: Payslip = {
     salary: salary,
     deductions: new Map(),
@@ -36,24 +34,38 @@ export function calculatePayslip(salary: Salary): Payslip {
   const yearlySalary = gross * 12;
   const born = salary.born;
   const payday = salary.payday;
+  const age = payday.getFullYear() - born.getFullYear();
+  let totalDeductions = 0.0;
 
-  const ahv = (gross * DEDUCTION_RATES.get("AHV")) / 100; // 5000 * 8.7 / 100 = 435
-  const iv = (gross * DEDUCTION_RATES.get("IV")) / 100; // 5000 * 1.4 / 100 = 70
-  const eo = (gross * DEDUCTION_RATES.get("EO")) / 100; // 5000 * 0.5 / 100 = 25
-  const alv = (gross * DEDUCTION_RATES.get("ALV")) / 100; // 5000 * 1.1 / 100 = 55
-  const nbu = (gross * DEDUCTION_RATES.get("NBU")) / 100; // 5000 * 0.73 / 100 = 36.5
-  const pk = (gross * DEDUCTION_RATES.get("PK")) / 100; // 5000 * 8.9 / 100 = 445
+  const ahv = (gross * DEDUCTION_RATES.get("AHV")) / 100;
+  const iv = (gross * DEDUCTION_RATES.get("IV")) / 100;
+  const eo = (gross * DEDUCTION_RATES.get("EO")) / 100;
+  const alv = (gross * DEDUCTION_RATES.get("ALV")) / 100;
+  const nbu = (gross * DEDUCTION_RATES.get("NBU")) / 100;
+  const pk = (gross * DEDUCTION_RATES.get("PK")) / 100;
 
-  // 435 + 70 + 25 + 55 + 36.5 + 445 = 1066.5
 
-  result.deductions.set("AHV", ahv);
-  result.deductions.set("IV", iv);
-  result.deductions.set("EO", eo);
-  result.deductions.set("ALV", alv);
-  result.deductions.set("NBU", nbu);
-  result.deductions.set("PK", pk);
+  if ( age > 17 ) {
+    result.deductions.set("AHV", ahv);
+    result.deductions.set("IV", iv);
+    result.deductions.set("EO", eo);
 
-  const totalDeductions = ahv + iv + eo + alv + nbu + pk;
+    totalDeductions += ahv + iv + eo;
+  }
+
+  if ( yearlySalary >= 2500 ) {
+    result.deductions.set("ALV", alv);
+    result.deductions.set("NBU", nbu);
+
+    totalDeductions += alv + nbu;
+  }
+
+  if ( yearlySalary >= 22680 ) {
+    result.deductions.set("PK", pk);
+
+    totalDeductions += pk;
+  }
+
   result.totalDeductions = totalDeductions;
   result.net = gross - totalDeductions;
 
